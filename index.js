@@ -52,11 +52,65 @@ app.command("/nirobot-help", async ({ ack, respond }) => {
   });
 });
 
-app.command('/nirobot-test', async({ack, respond}) => {
+app.command('/nirobot-test', async ({ ack, respond }) => {
     await ack();
+    let animes = [];
+
+    try {
+        const response = await axios.get('https://shikimori.io/api/animes?status=ongoing');
+        
+        for (let item of response.data) {
+            const img = item.image ? `https://shikimori.io${item.image.preview}` : 'https://placehold.co';
+            
+            let anime = { 
+                name: item.name, 
+                score: item.score,
+                img_url: img 
+            };
+            animes.push(anime);
+        }
+    }
+    catch (err) {
+        animes = [];
+        await respond({
+            response_type: "ephemeral", 
+            text: `got error here, the error text is this:  ${err.message}`
+        });
+        return; 
+    }
+
+    const anime_blocks = [];
+    for (let anime_info of animes) {
+        let anime_block = {
+            type: "section", 
+            fields: [
+                { type: "plain_text", text: `Name: ${anime_info.name}` },
+                { type: "plain_text", text: `Score: ${anime_info.score}` }
+            ]
+        };
+        let image_part = { 
+            type: "image", 
+            image_url: anime_info.img_url, 
+            alt_text: anime_info.name 
+        };
+        
+        anime_blocks.push(anime_block);
+        anime_blocks.push(image_part);
+    }
+
     await respond({
-        text:
-        `wow you made it`
+        response_type: "ephemeral",
+      
+        blocks: [
+            {
+                type: 'header',
+                text: {
+                    type: 'plain_text',
+                    text: 'All ongoing Animes!'
+                }
+            },
+            ...anime_blocks
+        ]
     });
 });
 
