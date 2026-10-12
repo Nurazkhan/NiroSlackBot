@@ -26,6 +26,65 @@ app.command("/nirobot-catfact", async ({ ack, respond }) => {
   }
 });
 
+app.command("/nirobot-currency", async ({ack, respond}) =>{
+  await ack();
+  try{
+    const response1 = await axios.get('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json');
+    
+    const response = await axios.get('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/cny.json');
+    let CNYinKZT = response.data.cny.kzt;
+    let USDinKZT = response1.data.usd.kzt;
+    let date = response.data.date;
+    await respond({response_type: 'ephemeral', blocks: [
+      {type: 'header', text: {type: 'plain_text', text: `Current exchange rate for CNY to KZT`}},
+      {type: 'section', text: {type: 'plain_text', text: `date: ` + date} },
+      {type: 'section', text: {type: 'plain_text', text: `1 USD: ` + USDinKZT + ` KZT`} },
+      {type: 'section', text: {type: 'plain_text', text: `1 CNY: ` + CNYinKZT + ` KZT`} }
+    ]})
+  }catch(err){
+    await respond({text: `failed to get currency rate ${err.message}` })
+  }
+
+})
+
+
+app.command('/nirobot-trend', async ({ack, respond}) => {
+  await ack();
+
+  try{
+    let response = await axios.get('https://api.github.com/search/repositories?q=created:>2026-10-10&sort=stars&order=desc&per_page=30', {headers: {
+        'User-Agent': 'SlackBot-App' 
+      }})
+  
+    
+    const items = response.data?.items;
+    if (!items || items.length === 0) {
+      await respond({ text: 'No trending repositories found for the specified timeframe.' });
+      return;
+    }
+    const random = Math.floor(Math.random()*items.length)
+    let project = items[random];
+    
+ 
+    await respond({
+      response_type: 'ephemeral',
+      blocks: [
+        {type: 'header', text:{type: 'plain_text', text: `Random Trending Git`}},
+        {type: 'section', text:{type: 'mrkdwn', text: `*Fullname:* ${project.full_name}`}},
+        {type: 'section', text:{type: 'mrkdwn', text: `*Stars:* ${project.stargazers_count} `}},
+        {type: 'section', text:{type: 'mrkdwn', text: `*Description:* ${project.description} `}},
+        {type: 'section', text:{type: 'mrkdwn', text: `*URL:* <${project.url}|Link> `}},
+        
+        
+      ]
+    })
+
+  }catch(err){
+    await respond({text: `failed to fetch git trends ${err.message}`})
+  }
+
+})
+
 app.command("/nirobot-joke", async ({ ack, respond }) => {
   await ack();
 
@@ -48,11 +107,16 @@ app.command("/nirobot-help", async ({ ack, respond }) => {
     text:
 `Available Commands:
 /nirobot-ping - Check bot latency
-/nirobot-catfact - Get a cat fact`
+/nirobot-catfact - Get a cat fact
+/nirobot-trend - Get Latest trending repos from github
+/nirobot-currency - Get USD and CNY values in terms of KZT
+/nirobot-anime - Get least of ongoing animes.
+/nirobot-joke - Get random Joke
+/nirobot-help - Get Info about all comands.`
   });
 });
 
-app.command('/nirobot-test', async ({ ack, respond }) => {
+app.command('/nirobot-anime', async ({ ack, respond }) => {
     await ack();
     let animes = [];
 
@@ -60,7 +124,7 @@ app.command('/nirobot-test', async ({ ack, respond }) => {
         const response = await axios.get('https://shikimori.io/api/animes?status=ongoing');
         
         for (let item of response.data) {
-            const img = item.image ? `https://shikimori.io${item.image.preview}` : 'https://placehold.co';
+            const img = `https://shikimori.io${item.image.preview}`;
             
             let anime = { 
                 name: item.name, 
@@ -113,6 +177,10 @@ app.command('/nirobot-test', async ({ ack, respond }) => {
         ]
     });
 });
+
+
+
+
 
 (async () => {
   await app.start();
