@@ -85,21 +85,7 @@ app.command('/nirobot-trend', async ({ack, respond}) => {
 
 })
 
-app.command("/nirobot-joke", async ({ ack, respond }) => {
-  await ack();
 
-  try {
-    const response = await axios.get("https://official-joke-api.appspot.com/random_joke");
-    await respond({
-      text:
-`${response.data.setup}
-
-${response.data.punchline}`
-    });
-  } catch (err) {
-    await respond({ text: "Failed to fetch a joke." });
-  }
-});
 
 app.command("/nirobot-help", async ({ ack, respond }) => {
   await ack();
@@ -111,7 +97,7 @@ app.command("/nirobot-help", async ({ ack, respond }) => {
 /nirobot-trend - Get Latest trending repos from github
 /nirobot-currency - Get USD and CNY values in terms of KZT
 /nirobot-anime - Get least of ongoing animes.
-/nirobot-joke - Get random Joke
+
 /nirobot-help - Get Info about all comands.`
   });
 });
