@@ -7,6 +7,7 @@ That is my slack bot Nirobot.
 ## Commands
 
 | Command             | Description |
+| ------------------| --- |
 | `/nirobot-ping`     | Check bot latency |
 | `/nirobot-catfact`  | Get a cat fact |
 | `/nirobot-trend`    | Get Latest trending repos from github |
@@ -20,7 +21,7 @@ That is my slack bot Nirobot.
 
 ## Try My Bot
 
-**[Test Koizinho on Slack](https://hackclub.enterprise.slack.com/archives/C0C8HA4S6BU)**
+**[Test Nirobot on Slack](https://hackclub.enterprise.slack.com/archives/C0C8HA4S6BU)**
 
 ## APIs Used
 
