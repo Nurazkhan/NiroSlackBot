@@ -2,7 +2,7 @@
 
 That is my slack bot Nirobot.
 
-<img src="./imgs/img.png" width="350">
+<img src="./imgs/img1.png" width="350">
 
 ## Commands
 
